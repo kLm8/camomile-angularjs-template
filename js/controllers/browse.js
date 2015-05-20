@@ -79,6 +79,40 @@ angular.module('camomileApp.controllers.browse', [
       });
     };
 
+    var groups = new vis.DataSet([
+      {id: 0, content: 'Speech', value: 1},
+      {id: 1, content: 'Emotion', value: 2},
+    ]);
+
+    // create a dataset with items
+    // note that months are zero-based in the JavaScript Date object, so month 3 is April
+    var items = new vis.DataSet([
+      {id: 0, group: 0, content: 'Charlie', start: 2, end: 10},
+      {id: 1, group: 0, content: 'baby', start: 15, end: 20},
+      {id: 2, group: 1, content: 'joy', start: 14, end: 15},
+      {id: 3, group: 1, content: 'laughter', start: 22, end: 25, style: 'color: red'}
+    ]);
+
+    // create visualization
+    var container = document.getElementById('visualization');
+    var options = {
+      // option groupOrder can be a property name or a sort function
+      // the sort function must compare two groups and return a value
+      //     > 0 when a > b
+      //     < 0 when a < b
+      //       0 when a == b
+      groupOrder: function (a, b) {
+        return a.value - b.value;
+      },
+      editable: true
+    };
+
+    var timeline = new vis.Timeline(container);
+    timeline.setOptions(options);
+    timeline.setGroups(groups);
+    timeline.setItems(items);
+    
+
     // get corpora on load
     getCorpora();
     // make sure to update corpora on login/logout
