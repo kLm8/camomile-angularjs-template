@@ -30,7 +30,7 @@ angular.module('camomileApp.controllers.browse', [
       $scope.browse.API = API;
     };
 
-    // update list of corpora 
+    // update list of corpora
     var getCorpora = function () {
       Camomile.getCorpora(function (err, data) {
         var corpora;
@@ -191,11 +191,37 @@ angular.module('camomileApp.controllers.browse', [
       msg = 'event=' + JSON.stringify(event) + ', ' + 'properties=' + JSON.stringify(properties);
       console.log(msg);
     }
-    
+
     $scope.browse.updateTime = function(currentTime, duration) {
       timeline.setCustomTime(currentTime*1000);
     };
 
+
+    // var wavesurfer = Object.create(WaveSurfer);
+
+    // var wavesurfer_options = {
+    //   container: '#waveform',
+    //   waveColor: 'violet',
+    //   progressColor: 'purple',
+    //   loaderColor   : 'purple',
+    //   cursorColor   : 'navy'
+    // };
+
+    // wavesurfer.on('ready', function () {
+    //   var timeline = Object.create(WaveSurfer.Timeline);
+
+    //   timeline.init({
+    //       wavesurfer: wavesurfer,
+    //       container: "#wave-timeline"
+    //   });
+    // });
+
+    // // Init wavesurfer
+    // wavesurfer.init(wavesurfer_options);
+    // wavesurfer.load('./audio.wav');
+
+    // console.log(Camomile.getMediumURL($scope.browse.medium));
+    // wavesurfer.load('/media/audio.wav');
 
     // get corpora on load
     getCorpora();
@@ -210,6 +236,8 @@ angular.module('camomileApp.controllers.browse', [
     });
 
     $scope.$watch('browse.medium', function () {
+      // console.log(Camomile.getMediumURL($scope.browse.medium));
+
       $scope.browse.mediumSrc = [{
         src: $sce.trustAsResourceUrl(Camomile.getMediumURL($scope.browse.medium, "webm")),
         type: "video/webm"
@@ -222,4 +250,4 @@ angular.module('camomileApp.controllers.browse', [
       }];
     });
 
-  }]);
+}]);
