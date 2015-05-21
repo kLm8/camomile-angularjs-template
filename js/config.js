@@ -3,12 +3,12 @@
 
 angular.module('camomileApp.production', [])
     .constant('camomileConfig', {
-        backend: 'http://192.168.59.103:32769'
+        backend: 'http://192.168.59.103:32768'
     });
 
 angular.module('camomileApp.development', [])
     .constant('camomileConfig', {
-        backend: 'http://192.168.59.103:32769'
+        backend: 'http://192.168.59.103:32768'
     });
 
 // More info on configuration files 

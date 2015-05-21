@@ -22,6 +22,10 @@
         <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
         <link rel="stylesheet" href="bower_components/videogular-themes-default/videogular.css">
 
+        <link rel="stylesheet" href="css/app.css"/>
+
+        <link href="bower_components/vis/dist/vis.css" rel="stylesheet" type="text/css"/>
+
         <script src="bower_components/modernizr/modernizr.js"></script>
 
     </head>
@@ -107,7 +111,7 @@
         </form>
 
         <div ng-show="browse.medium" class="videogular-container">
-          <videogular>
+          <videogular vg-player-ready="browse.onPlayerReady($API)" vg-update-time="browse.updateTime($currentTime, $duration)">
             <vg-media vg-src="browse.mediumSrc"></vg-media>
             <vg-controls>
               <vg-play-pause-button></vg-play-pause-button>
@@ -120,11 +124,12 @@
                 <vg-mute-button></vg-mute-button>
                 <vg-volume-bar></vg-volume-bar>
               </vg-volume>
-            </vg-controls> 
+            </vg-controls>
+            <vg-overlay-play></vg-overlay-play>
           </videogular>
         </div>
 
-        <div id="visualization"></div>
+        <div ng-show="browse.medium" id="timeline"></div>
       
       </div>
   
@@ -139,14 +144,13 @@
 
         <script src="bower_components/angular/angular.min.js"></script>
         <script src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
-        
         <script src="bower_components/videogular/videogular.js"></script>
         <script src="bower_components/videogular-controls/vg-controls.js"></script>
+        <script src="bower_components/videogular-overlay-play/vg-overlay-play.js"></script>
 
         <script src="bower_components/autofill-event/src/autofill-event.js"></script>
 
         <script src="bower_components/vis/dist/vis.js"></script>
-        <link href="bower_components/vis/dist/vis.css" rel="stylesheet" type="text/css" />
 
         <script src="js/config.js"></script>
         

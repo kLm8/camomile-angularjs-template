@@ -1,0 +1,11 @@
+.videogular-container {
+    width: 640px;
+    height: 410px;
+    margin: auto;
+    overflow: hidden;
+}
+
+/*.videogular-container.audio {
+    width: 1170px;
+    height: 50px;
+}*/
