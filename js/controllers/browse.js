@@ -110,19 +110,8 @@ angular.module('camomileApp.controllers.browse', [
       });
     };
 
-    var groups = new vis.DataSet([
-      // {id: 0, content: 'Speech', value: 1},
-      // {id: 1, content: 'Emotion', value: 2}
-    ]);
-
-    // create a dataset with items
-    // note that months are zero-based in the JavaScript Date object, so month 3 is April
-    var items = new vis.DataSet([
-      // {id: 0, group: 0, content: 'Charlie', start: 2000, end: 10000, type: 'range'},
-      // {id: 1, group: 0, content: 'baby', start: 15000, end: 20000, type: 'range'},
-      // {id: 2, group: 1, content: 'joy', start: 14000, end: 15000, type: 'range'},
-      // {id: 3, group: 1, content: 'laughter', start: 22000, end: 25000, style: 'color: red', type: 'range'}
-    ]);
+    var groups = new vis.DataSet([]);
+    var items = new vis.DataSet([]);
 
     // create timeline
     var container = document.getElementById('timeline');
@@ -192,8 +181,8 @@ angular.module('camomileApp.controllers.browse', [
 
     var timeline = new vis.Timeline(container);
     timeline.setOptions(options);
-    // timeline.setGroups(groups);
-    // timeline.setItems(items);
+    timeline.setGroups(groups);
+    timeline.setItems(items);
     timeline.setCustomTime(0);
 
     timeline.on('timechange', function (properties) {
@@ -208,6 +197,11 @@ angular.module('camomileApp.controllers.browse', [
       timeline.focus(selection);
     });
 
+    items.on('update', function (event, properties) {
+      console.log((properties.data[0].start).getTime()/1000);
+      $scope.browse.API.seekTime((properties.data[0].start).getTime()/1000);
+    });
+
     items.on('*', function (event, properties) {
       logEvent(event, properties);
     });
@@ -219,6 +213,10 @@ angular.module('camomileApp.controllers.browse', [
 
     $scope.browse.updateTime = function(currentTime, duration) {
       timeline.setCustomTime(currentTime*1000);
+    };
+
+    $scope.browse.updateState = function(state) {
+      
     };
 
 
@@ -259,18 +257,17 @@ angular.module('camomileApp.controllers.browse', [
       getMedia();
       getLayers();
 
-      console.log(parseInt($scope.browse.layers[0]['_id'], 16))
+      // console.log(parseInt($scope.browse.layers[0]['_id'], 16))
 
-      var groups = [];
       for (var i = 0; i < $scope.browse.layers.length; i++) {
-        groups.push({
+        groups.add({
           id: parseInt($scope.browse.layers[i]['_id'], 16),
           content: $scope.browse.layers[i]['name'], 
           value: i
         });
       };
 
-      timeline.setGroups(groups);
+      timeline.redraw();
     });
 
     $scope.$watch('browse.medium', function () {
@@ -291,29 +288,20 @@ angular.module('camomileApp.controllers.browse', [
     });
 
     $scope.$watch('browse.layer', function () {
-      var items = [];
-
       for (var i = 0; i < $scope.browse.annotations.length; i++) {
-        console.log(parseInt($scope.browse.annotations[i]['_id'], 16));
+        // console.log(parseInt($scope.browse.annotations[i]['_id'], 16));
 
-        items.push({
+        items.add({
           id: parseInt($scope.browse.annotations[i]['_id'], 16),
-          group: $scope.browse.annotations[i]['id_layer'],
+          group: parseInt($scope.browse.annotations[i]['id_layer'], 16),
           content: $scope.browse.annotations[i]['data'],
           start: $scope.browse.annotations[i]['fragment']['start']*1000,
           end: $scope.browse.annotations[i]['fragment']['end']*1000
         })
-
-        // var items = new vis.DataSet([
-        //   {id: i, group: 0, content: 'Charlie', start: 2000, end: 10000, type: 'range'},
-        //   {id: 1, group: 0, content: 'baby', start: 15000, end: 20000, type: 'range'},
-        //   {id: 2, group: 1, content: 'joy', start: 14000, end: 15000, type: 'range'},
-        //   {id: 3, group: 1, content: 'laughter', start: 22000, end: 25000, style: 'color: red', type: 'range'}
-        // ]);
       };
 
-      timeline.setItems(items);
-      timeline.setWindow(0, 10*1000);
+      // timeline.setItems(items_data);
+      timeline.setWindow(0, 60*1000);
     });
 
 }]);
