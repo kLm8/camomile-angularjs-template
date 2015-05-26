@@ -23,6 +23,8 @@ angular.module('camomileApp.controllers.browse', [
     $scope.browse.layers = [];
     // selected layer
     $scope.browse.layer = undefined;
+    // list of annotations in selected medium
+    $scope.browse.annotations = [];
 
     // API videogular
     $scope.browse.API = null;
@@ -78,6 +80,7 @@ angular.module('camomileApp.controllers.browse', [
         // nested in $scope.$apply to make sure a change event is triggered
         $scope.$apply(function () {
           $scope.browse.layers = layers;
+          // console.log(layers);
         });
       }, {
         'filter': {
@@ -86,18 +89,39 @@ angular.module('camomileApp.controllers.browse', [
       });
     };
 
+    // update list of annotations
+    var getAnnotations = function () {
+      Camomile.getAnnotations(function (err, data) {
+        var annotations;
+        if (err) {
+          annotations = [];
+        } else {
+          annotations = data;
+        }
+        // nested in $scope.$apply to make sure a change event is triggered
+        $scope.$apply(function () {
+          $scope.browse.annotations = annotations;
+          // console.log(annotations);
+        });
+      }, {
+        'filter': {
+          'id_medium': $scope.browse.medium,
+        }
+      });
+    };
+
     var groups = new vis.DataSet([
-      {id: 0, content: 'Speech', value: 1},
-      {id: 1, content: 'Emotion', value: 2},
+      // {id: 0, content: 'Speech', value: 1},
+      // {id: 1, content: 'Emotion', value: 2}
     ]);
 
     // create a dataset with items
     // note that months are zero-based in the JavaScript Date object, so month 3 is April
     var items = new vis.DataSet([
-      {id: 0, group: 0, content: 'Charlie', start: 2000, end: 10000, type: 'range'},
-      {id: 1, group: 0, content: 'baby', start: 15000, end: 20000, type: 'range'},
-      {id: 2, group: 1, content: 'joy', start: 14000, end: 15000, type: 'range'},
-      {id: 3, group: 1, content: 'laughter', start: 22000, end: 25000, style: 'color: red', type: 'range'}
+      // {id: 0, group: 0, content: 'Charlie', start: 2000, end: 10000, type: 'range'},
+      // {id: 1, group: 0, content: 'baby', start: 15000, end: 20000, type: 'range'},
+      // {id: 2, group: 1, content: 'joy', start: 14000, end: 15000, type: 'range'},
+      // {id: 3, group: 1, content: 'laughter', start: 22000, end: 25000, style: 'color: red', type: 'range'}
     ]);
 
     // create timeline
@@ -152,7 +176,8 @@ angular.module('camomileApp.controllers.browse', [
       showCustomTime: true,
       start: 0,
       min: 0,
-      format: {minorLabels: {millisecond:'s[s]SS[ms]', second:'s[s]', minute:'m'}},
+      max: 1000*60*10,
+      format: {minorLabels: {millisecond:'s[::]SS', second:'m[:]s', minute:'m'}},
       type: 'range',
       showMajorLabels: false,
       snap: null,
@@ -167,8 +192,8 @@ angular.module('camomileApp.controllers.browse', [
 
     var timeline = new vis.Timeline(container);
     timeline.setOptions(options);
-    timeline.setGroups(groups);
-    timeline.setItems(items);
+    // timeline.setGroups(groups);
+    // timeline.setItems(items);
     timeline.setCustomTime(0);
 
     timeline.on('timechange', function (properties) {
@@ -233,6 +258,19 @@ angular.module('camomileApp.controllers.browse', [
     $scope.$watch('browse.corpus', function () {
       getMedia();
       getLayers();
+
+      console.log(parseInt($scope.browse.layers[0]['_id'], 16))
+
+      var groups = [];
+      for (var i = 0; i < $scope.browse.layers.length; i++) {
+        groups.push({
+          id: parseInt($scope.browse.layers[i]['_id'], 16),
+          content: $scope.browse.layers[i]['name'], 
+          value: i
+        });
+      };
+
+      timeline.setGroups(groups);
     });
 
     $scope.$watch('browse.medium', function () {
@@ -248,6 +286,34 @@ angular.module('camomileApp.controllers.browse', [
         src: $sce.trustAsResourceUrl(Camomile.getMediumURL($scope.browse.medium, "ogg")),
         type: "video/ogg"
       }];
+
+      getAnnotations();
+    });
+
+    $scope.$watch('browse.layer', function () {
+      var items = [];
+
+      for (var i = 0; i < $scope.browse.annotations.length; i++) {
+        console.log(parseInt($scope.browse.annotations[i]['_id'], 16));
+
+        items.push({
+          id: parseInt($scope.browse.annotations[i]['_id'], 16),
+          group: $scope.browse.annotations[i]['id_layer'],
+          content: $scope.browse.annotations[i]['data'],
+          start: $scope.browse.annotations[i]['fragment']['start']*1000,
+          end: $scope.browse.annotations[i]['fragment']['end']*1000
+        })
+
+        // var items = new vis.DataSet([
+        //   {id: i, group: 0, content: 'Charlie', start: 2000, end: 10000, type: 'range'},
+        //   {id: 1, group: 0, content: 'baby', start: 15000, end: 20000, type: 'range'},
+        //   {id: 2, group: 1, content: 'joy', start: 14000, end: 15000, type: 'range'},
+        //   {id: 3, group: 1, content: 'laughter', start: 22000, end: 25000, style: 'color: red', type: 'range'}
+        // ]);
+      };
+
+      timeline.setItems(items);
+      timeline.setWindow(0, 10*1000);
     });
 
 }]);
