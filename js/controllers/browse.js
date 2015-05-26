@@ -257,14 +257,27 @@ angular.module('camomileApp.controllers.browse', [
       getMedia();
       getLayers();
 
-      // console.log(parseInt($scope.browse.layers[0]['_id'], 16))
+      if (window.XMLHttpRequest) xhttp = new XMLHttpRequest();
+      else xhttp = new ActiveXObject("Microsoft.XMLHTTP"); // IE
 
-      for (var i = 0; i < $scope.browse.layers.length; i++) {
-        groups.add({
-          id: parseInt($scope.browse.layers[i]['_id'], 16),
-          content: $scope.browse.layers[i]['name'], 
-          value: i
-        });
+      xhttp.open("GET", "config.xml", false);
+      xhttp.send();
+      xmlDoc = xhttp.responseXML;
+
+      // console.log(xmlDoc);
+
+      layers = xmlDoc.getElementsByTagName("layer");
+
+      for (var i = 0; i < layers.length; i++) {
+        // console.log(layers[i].firstChild.nodeValue);
+        for (var j = 0; j < $scope.browse.layers.length; j++) {
+          if ($scope.browse.layers[j]['name'] == layers[i].firstChild.nodeValue) {
+            groups.add({
+              id: parseInt($scope.browse.layers[j]['_id'], 16),
+              content: $scope.browse.layers[j]['name']
+            });
+          }
+        };
       };
 
       timeline.redraw();
@@ -288,6 +301,7 @@ angular.module('camomileApp.controllers.browse', [
     });
 
     $scope.$watch('browse.layer', function () {
+      items.clear();
       for (var i = 0; i < $scope.browse.annotations.length; i++) {
         // console.log(parseInt($scope.browse.annotations[i]['_id'], 16));
 
