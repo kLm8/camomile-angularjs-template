@@ -26,6 +26,9 @@
 
         <link href="bower_components/vis/dist/vis.css" rel="stylesheet" type="text/css"/>
 
+        <!-- <link href="bower_components/wavesurfer.js/example/css/style.css" rel="stylesheet" type="text/css"/>
+        <link href="bower_components/wavesurfer.js/example/css/style.css" rel="stylesheet" type="text/css"/> -->
+
         <script src="bower_components/modernizr/modernizr.js"></script>
 
     </head>
@@ -133,24 +136,26 @@
 
         <hr>
 
-        <div ng-show="browse.medium" id="wavesurfer">
-          <div id="waveform">
-            <div class="progress progress-striped active" id="progress-bar">
-              <div class="progress-bar progress-bar-info"></div>
-            </div>
-            <!-- Here is the waveform -->
-          </div>
-          <div id="wave-timeline"></div>
+        <div id="demo">
+          <div class="row" style="margin: 30px 0">
+              <div class="col-sm-10">
+                  <wavesurfer url="audio.wav" wave-color="#337ab7" progress-color="#23527c" height="64"></wavesurfer>
+              </div>
 
-          <!-- <div class="controls">
-            <button class="btn btn-primary" data-action="play">
-              <i class="glyphicon glyphicon-play"></i>
-              Play
-              /
-              <i class="glyphicon glyphicon-pause"></i>
-              Pause
-            </button>
-          </div> -->
+              <div class="col-sm-2">
+                  <button class="btn btn-success btn-block" ng-click="wavesurfer.playPause()">
+                      <span id="play" ng-show="paused">
+                          <i class="glyphicon glyphicon-play"></i>
+                          Play
+                      </span>
+
+                      <span id="pause" ng-show="!paused">
+                          <i class="glyphicon glyphicon-pause"></i>
+                          Pause
+                      </span>
+                  </button>
+              </div>
+          </div>
         </div>
 
         <hr>
@@ -180,7 +185,6 @@
         <script src="bower_components/vis/dist/vis.js"></script>
 
         <script src="bower_components/wavesurfer.js/dist/wavesurfer.min.js"></script>
-        <script src="bower_components/wavesurfer.js/dist/plugin/wavesurfer.timeline.min.js"></script>
 
         <script src="js/config.js"></script>
         
